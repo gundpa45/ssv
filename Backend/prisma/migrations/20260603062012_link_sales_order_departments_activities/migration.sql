@@ -1,0 +1,3 @@
+-- This migration was applied directly to the database.
+-- Creating an empty placeholder to sync local migration history.
+-- Tables _SalesOrderActivities and _SalesOrderDepartments were created by this migration.

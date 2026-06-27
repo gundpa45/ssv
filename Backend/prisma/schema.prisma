@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  RESIGNED
+  SUSPENDED
+}
+
+enum SOStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum ActivityStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REWORK_ASSIGNED
+}
+
+model Role {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+
+  isActive Boolean @default(true)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  roleActivities RoleActivity[]
+  users          User[]
+
+  restrictedActivities Activity[]
+}
+
+model User {
+  id String @id @default(uuid())
+
+  employeeId String @unique
+
+  firstName String
+  lastName  String
+
+  mobile String  @unique
+  email  String?
+
+  passwordHash String
+
+  roleId String
+
+  status EmployeeStatus @default(ACTIVE)
+
+  isActive Boolean @default(true)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role          Role               @relation(fields: [roleId], references: [id])
+  activityLogs  ActivityLog[]
+  coworkerSlots ActivityCoworker[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+}
+
+model Department {
+  id String @id @default(uuid())
+
+  name String
+  code String @unique
+
+  description String?
+
+  isActive Boolean @default(true)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activities    Activity[]
+  activityLogs  ActivityLog[]
+  soDepartments SODepartment[]
+}
+
+model Activity {
+  id String @id @default(uuid())
+
+  activityName String
+
+  standardManMinutes Int
+
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  restrictedRoleId String?
+  restrictedRole   Role?   @relation(fields: [restrictedRoleId], references: [id])
+
+  isActive Boolean @default(true)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roleActivities         RoleActivity[]
+  activityLogs           ActivityLog[]
+  soDepartmentActivities SODepartmentActivity[]
+}
+
+model RoleActivity {
+  id String @id @default(uuid())
+
+  roleId     String
+  activityId String
+
+  createdAt DateTime @default(now())
+
+  role     Role     @relation(fields: [roleId], references: [id])
+  activity Activity @relation(fields: [activityId], references: [id])
+
+  @@unique([roleId, activityId])
+}
+
+model SalesOrder {
+  id String @id @default(uuid())
+
+  soNumber String @unique
+
+  customerName String
+
+  projectName String?
+
+  soDescription String?
+
+  startDate DateTime
+
+  endDate DateTime
+
+  status String @default("ACTIVE")
+
+  isActive Boolean @default(true)
+
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activityLogs  ActivityLog[]
+  soDepartments SODepartment[]
+}
+
+model ActivityLog {
+  id String @id @default(uuid())
+
+  userId       String
+  soId         String
+  departmentId String
+  activityId   String
+
+  activityDate DateTime
+
+  status ActivityStatus @default(PENDING)
+
+  remarks String?
+
+  isOtherActivity     Boolean @default(false)
+  otherActivityReason String?
+
+  managerRemarks     String?
+  isRework           Boolean @default(false)
+  reworkAssignedToId String?
+
+  attachmentCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id])
+  SalesOrder SalesOrder @relation(fields: [soId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  activity   Activity   @relation(fields: [activityId], references: [id])
+
+  slots       ActivitySlot[]
+  attachments ActivityAttachment[]
+
+  @@unique([userId, soId, departmentId, activityId, activityDate])
+}
+
+model ActivitySlot {
+  id String @id @default(uuid())
+
+  activityLogId String
+
+  startTime DateTime
+  endTime   DateTime
+
+  durationMinutes Int
+
+  createdAt DateTime @default(now())
+
+  activityLog ActivityLog @relation(fields: [activityLogId], references: [id])
+
+  coworkers ActivityCoworker[]
+}
+
+model ActivityCoworker {
+  id String @id @default(uuid())
+
+  activitySlotId String
+  coworkerUserId String
+
+  createdAt DateTime @default(now())
+
+  activitySlot ActivitySlot @relation(fields: [activitySlotId], references: [id])
+
+  coworker User @relation(fields: [coworkerUserId], references: [id])
+}
+
+model ActivityAttachment {
+  id String @id @default(uuid())
+
+  activityLogId String
+
+  fileName String
+  fileUrl  String
+  fileType String
+
+  createdAt DateTime @default(now())
+
+  activityLog ActivityLog @relation(fields: [activityLogId], references: [id])
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  userId String
+
+  title   String
+  message String
+
+  type        String
+  referenceId String?
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id String @id @default(uuid())
+
+  userId String
+
+  module String
+  action String
+
+  entityId String?
+
+  oldValue String?
+  newValue String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SODepartment {
+  id           String   @id @default(uuid())
+  soId         String
+  departmentId String
+  createdAt    DateTime @default(now())
+
+  salesOrder SalesOrder @relation(fields: [soId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+
+  soDepartmentActivities SODepartmentActivity[]
+
+  @@unique([soId, departmentId])
+}
+
+model SODepartmentActivity {
+  id             String   @id @default(uuid())
+  soDepartmentId String
+  activityId     String
+  createdAt      DateTime @default(now())
+
+  soDepartment SODepartment @relation(fields: [soDepartmentId], references: [id])
+  activity     Activity     @relation(fields: [activityId], references: [id])
+
+  @@unique([soDepartmentId, activityId])
+}
