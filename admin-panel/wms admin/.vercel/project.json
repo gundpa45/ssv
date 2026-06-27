@@ -1,0 +1,16 @@
+﻿{
+  "projectId": "prj_q55lr5JoFvLlUpEiaND8T064it7c",
+  "orgId": "team_d5wwbOBksjguSphlTpZcZ6C0",
+  "projectName": "wms-admin-panel",
+  "settings": {
+    "createdAt": 1780945416080,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": "wms/wms/admin-panel",
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
