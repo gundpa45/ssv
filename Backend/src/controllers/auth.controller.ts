@@ -24,6 +24,8 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Req() req: any) {
@@ -36,7 +38,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin')
-  @Get(['admin-only', 'admi-only'])
+  @Get('admin-only')
   async adminOnly(): Promise<{ message: string; }> {
     return {
       message: 'Welcome Admin',

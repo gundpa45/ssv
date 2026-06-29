@@ -28,6 +28,9 @@ enum ActivityStatus {
   IN_PROGRESS
   COMPLETED
   REWORK_ASSIGNED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
 }
 
 model Role {

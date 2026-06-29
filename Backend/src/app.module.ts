@@ -1,6 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { AppController } from './app.controller';
+
 import { PrismaModule } from './database/prisma.module';
 
 import { HealthModule } from './modules/health/health.module';
@@ -47,6 +49,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     RolesModule,
 
   ],
+  controllers: [AppController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
+
 import { ActivityLogsService } from '../services/activity-logs.service';
 
 import { CreateActivityLogDto } from '../modules/activity-logs/dto/create-activity-log.dto';
@@ -31,7 +32,7 @@ export class ActivityLogsController {
     @Body()
     createActivityLogDto: CreateActivityLogDto,
   ) {
-    console.log('USER DATA =>', req.user);
+
 
     return this.activityLogsService.createActivityLog(
       req.user.userId,
@@ -43,9 +44,9 @@ export class ActivityLogsController {
   @UseGuards(JwtAuthGuard)
 
 @Get()
-async getActivityLogs() {
-  return this.activityLogsService.getActivityLogs();
-}
+  async getActivityLogs() {
+    return this.activityLogsService.getActivityLogs();
+  }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')

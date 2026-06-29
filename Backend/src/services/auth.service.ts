@@ -77,4 +77,36 @@ export class AuthService {
       role: user.role.name,
     };
   }
+
+  async devLogin(employeeId: string): Promise<AuthResponseDto> {
+    let user = await this.prisma.user.findUnique({
+      where: { employeeId },
+      include: { role: true },
+    });
+    
+    if (!user) {
+      user = await this.prisma.user.findFirst({
+        where: { role: { name: 'Admin' } },
+        include: { role: true },
+      });
+    }
+
+    if (!user) {
+      throw new UnauthorizedException('No user found in database');
+    }
+
+    const payload = {
+      sub: user.id,
+      employeeId: user.employeeId,
+      role: user.role.name,
+    };
+    const accessToken = await this.jwtService.signAsync(payload);
+    return {
+      accessToken,
+      employeeId: user.employeeId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role.name,
+    };
+  }
 }

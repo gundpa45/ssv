@@ -278,53 +278,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const getMockDepartments = (): Department[] => [
-    {
-      id: 'dept-mock-1',
-      name: 'Core Assembly',
-      code: 'CA',
-      description: 'Core Assembly Department',
-      activities: [
-        { id: 'act-mock-1', name: 'Core Stacking', standardMinutes: 240 },
-        { id: 'act-mock-2', name: 'Core Clamping', standardMinutes: 120 },
-        { id: 'act-mock-3', name: 'Core Measurement & Testing', standardMinutes: 90 },
-        { id: 'act-mock-4', name: 'Core Insulation', standardMinutes: 180 },
-      ],
-    },
-    {
-      id: 'dept-mock-2',
-      name: 'Winding',
-      code: 'WD',
-      description: 'Winding Department',
-      activities: [
-        { id: 'act-mock-5', name: 'LV Winding', standardMinutes: 300 },
-        { id: 'act-mock-6', name: 'HV Winding', standardMinutes: 360 },
-        { id: 'act-mock-7', name: 'Winding Insulation', standardMinutes: 150 },
-      ],
-    },
-    {
-      id: 'dept-mock-3',
-      name: 'Dispatch',
-      code: 'DSP',
-      description: 'Dispatch Department',
-      activities: [
-        { id: 'act-mock-8', name: 'Packing', standardMinutes: 120 },
-        { id: 'act-mock-9', name: 'Loading', standardMinutes: 90 },
-        { id: 'act-mock-10', name: 'Documentation', standardMinutes: 60 },
-      ],
-    },
-    {
-      id: 'dept-mock-4',
-      name: 'Testing',
-      code: 'TST',
-      description: 'Testing Department',
-      activities: [
-        { id: 'act-mock-11', name: 'Routine Testing', standardMinutes: 180 },
-        { id: 'act-mock-12', name: 'Type Testing', standardMinutes: 480 },
-        { id: 'act-mock-13', name: 'Final QC Inspection', standardMinutes: 120 },
-      ],
-    },
-  ];
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -443,37 +397,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const getMockNotifications = (empId: string): Notification[] => [
-    {
-      id: 'notif-1',
-      userId: empId,
-      title: 'Rework Assigned',
-      message: 'Rework assigned by manager: Coil assembly mismatch on SO-2025-001. Please inspect.',
-      type: 'rework',
-      referenceId: 'SO-2025-001',
-      isRead: false,
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-    },
-    {
-      id: 'notif-2',
-      userId: empId,
-      title: 'Report Approved',
-      message: 'Your work report for SO-2025-001 (Packing) was approved.',
-      type: 'approved',
-      referenceId: 'SO-2025-001',
-      isRead: false,
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-    },
-    {
-      id: 'notif-3',
-      userId: empId,
-      title: 'Shift Reminder',
-      message: 'Reminder: Daily productivity report must be submitted before 17:30 hours.',
-      type: 'info',
-      isRead: false,
-      createdAt: new Date(Date.now() - 172800000).toISOString(),
-    }
-  ];
+
 
   const fetchNotifications = async () => {
     try {
