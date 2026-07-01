@@ -4,12 +4,9 @@
 
 ```
 d:\ME\Intern\ssv\on1\
-├── admin-panel/
-│   └── wms admin/          ← Admin frontend (React + Vite + MUI)
-├── supervisor-panel/
-│   └── wms supervisor pannel/  ← Supervisor frontend
-└── user/
-    └── user/               ← Worker/User frontend
+├── admin-panel/        ← Admin frontend (React + Vite + MUI)
+├── supervisor-panel/   ← Supervisor frontend
+└── user/               ← Worker/User frontend
 
 d:\ME\Intern\project\1-copy\   ← NestJS Backend
 ```
@@ -62,11 +59,11 @@ npm run start:dev
 
 - **Framework:** React 19 + TypeScript + Vite + Material UI v9
 - **Port:** `5173`
-- **Directory:** `d:\ME\Intern\ssv\on1\admin-panel\wms admin\`
+- **Directory:** `d:\ME\Intern\ssv\on1\admin-panel\`
 
 ### Start Admin Frontend
 ```bash
-cd "d:\ME\Intern\ssv\on1\admin-panel\wms admin"
+cd "d:\ME\Intern\ssv\on1\admin-panel"
 npm run dev
 ```
 
@@ -129,12 +126,12 @@ src/
 
 ## Supervisor Frontend
 
-- **Directory:** `d:\ME\Intern\ssv\on1\supervisor-panel\wms supervisor pannel\`
+- **Directory:** `d:\ME\Intern\ssv\on1\supervisor-panel\`
 - **Pages:** Dashboard, ReviewActivity, WorkVerification, UserMonitoring, EmployeeDetails, Reports, Notifications, Profile
 
 ### Start Supervisor Frontend
 ```bash
-cd "d:\ME\Intern\ssv\on1\supervisor-panel\wms supervisor pannel"
+cd "d:\ME\Intern\ssv\on1\supervisor-panel"
 npm run dev
 ```
 
@@ -142,12 +139,12 @@ npm run dev
 
 ## Worker/User Frontend
 
-- **Directory:** `d:\ME\Intern\ssv\on1\user\user\`
+- **Directory:** `d:\ME\Intern\ssv\on1\user\`
 - **Pages:** WorkerDashboard, SubmitWork, SubmissionHistory, WorkerNotifications
 
 ### Start Worker Frontend
 ```bash
-cd "d:\ME\Intern\ssv\on1\user\user"
+cd "d:\ME\Intern\ssv\on1\user"
 npm run dev
 ```
 
