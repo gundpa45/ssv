@@ -10,7 +10,9 @@ async function bootstrap() {
   origin: true,
   credentials: true,
 });
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['/'],
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
