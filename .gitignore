@@ -24,3 +24,6 @@ temp_hive_box/
 
 # IDE
 .idea/
+
+# Ignore duplicate nested folder
+ssv-main/

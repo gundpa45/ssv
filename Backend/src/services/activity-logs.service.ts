@@ -200,18 +200,13 @@ export class ActivityLogsService {
     }
   }
 
-  async getActivityLogs() {
-  const logs =
-    await this.prisma.activityLog.findMany({
+  async getActivityLogs(page?: number, limit?: number) {
+    const options: any = {
       include: {
         user: true,
-
         SalesOrder: true,
-
         department: true,
-
         activity: true,
-
         slots: {
           include: {
             coworkers: {
@@ -222,14 +217,19 @@ export class ActivityLogsService {
           },
         },
       },
-
       orderBy: {
         createdAt: 'desc',
       },
-    });
+    };
 
-  return logs;
-}
+    if (page !== undefined && limit !== undefined) {
+      options.skip = (page - 1) * limit;
+      options.take = limit;
+    }
+
+    const logs = await this.prisma.activityLog.findMany(options);
+    return logs;
+  }
 
   async updateActivityLog(id: string, updatedFields: any) {
     const existing = await this.prisma.activityLog.findUnique({ where: { id } });

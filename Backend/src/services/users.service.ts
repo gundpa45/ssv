@@ -53,6 +53,14 @@ export class UsersService {
         generatedPassword,
       );
 
+    let actualRoleId = createUserDto.roleId;
+    let subRole: string | null = null;
+    if (createUserDto.roleId.includes(':')) {
+      const parts = createUserDto.roleId.split(':');
+      actualRoleId = parts[0];
+      subRole = parts[1];
+    }
+
     const user =
       await this.prisma.user.create({
         data: {
@@ -75,13 +83,20 @@ export class UsersService {
             hashedPassword,
 
           roleId:
-            createUserDto.roleId,
+            actualRoleId,
+
+          subRole:
+            subRole,
         },
 
         include: {
           role: true,
         },
       });
+
+    const effectiveRoleName = user.role.name === 'Worker' && user.subRole
+      ? user.subRole
+      : user.role.name;
 
     // Audit log for user creation
     if (performedByUserId) {
@@ -97,7 +112,7 @@ export class UsersService {
             lastName: user.lastName,
             mobile: user.mobile,
             email: user.email,
-            role: user.role.name,
+            role: effectiveRoleName,
           }),
         },
       });
@@ -128,7 +143,7 @@ export class UsersService {
           user.email,
 
         role:
-          user.role.name,
+          effectiveRoleName,
       },
     };
   }
@@ -171,7 +186,7 @@ export class UsersService {
         user.status,
 
       role:
-        user.role.name,
+        user.role.name === 'Worker' && user.subRole ? user.subRole : user.role.name,
 
       isActive:
         user.isActive,
@@ -200,6 +215,9 @@ export class UsersService {
       );
     }
 
+    const effectiveRoleName = user.role.name === 'Worker' && user.subRole ? user.subRole : user.role.name;
+    const effectiveRoleId = user.role.name === 'Worker' && user.subRole ? `${user.role.id}:${user.subRole}` : user.role.id;
+
     return {
       id: user.id,
 
@@ -222,9 +240,9 @@ export class UsersService {
         user.status,
 
       role: {
-        id: user.role.id,
+        id: effectiveRoleId,
 
-        name: user.role.name,
+        name: effectiveRoleName,
       },
 
       isActive:
@@ -242,7 +260,7 @@ export class UsersService {
     const namePart =
       firstName
         .substring(0, 3)
-        .toLowerCase();
+        .toUpperCase();
 
     const mobilePart =
       mobile.slice(-3);
@@ -275,21 +293,37 @@ export class UsersService {
       );
     }
 
+    const updateData: any = {
+      ...updateUserDto,
+      ...(updateUserDto.isActive !== undefined ? { status: updateUserDto.isActive ? 'ACTIVE' : 'INACTIVE' } : {}),
+    };
+
+    if (updateUserDto.roleId) {
+      if (updateUserDto.roleId.includes(':')) {
+        const parts = updateUserDto.roleId.split(':');
+        updateData.roleId = parts[0];
+        updateData.subRole = parts[1];
+      } else {
+        updateData.roleId = updateUserDto.roleId;
+        updateData.subRole = null;
+      }
+    }
+
     const updatedUser =
       await this.prisma.user.update({
         where: {
           id: existingUser.id,
         },
 
-        data: {
-          ...updateUserDto,
-          ...(updateUserDto.isActive !== undefined ? { status: updateUserDto.isActive ? 'ACTIVE' : 'INACTIVE' } : {}),
-        },
+        data: updateData,
 
         include: {
           role: true,
         },
       });
+
+    const oldEffectiveRole = existingUser.role.name === 'Worker' && existingUser.subRole ? existingUser.subRole : existingUser.role.name;
+    const newEffectiveRole = updatedUser.role.name === 'Worker' && updatedUser.subRole ? updatedUser.subRole : updatedUser.role.name;
 
     // Audit log for user update
     if (performedByUserId) {
@@ -304,7 +338,7 @@ export class UsersService {
             lastName: existingUser.lastName,
             mobile: existingUser.mobile,
             email: existingUser.email,
-            role: existingUser.role.name,
+            role: oldEffectiveRole,
             isActive: existingUser.isActive,
           }),
           newValue: JSON.stringify({
@@ -312,7 +346,7 @@ export class UsersService {
             lastName: updatedUser.lastName,
             mobile: updatedUser.mobile,
             email: updatedUser.email,
-            role: updatedUser.role.name,
+            role: newEffectiveRole,
             isActive: updatedUser.isActive,
           }),
         },
