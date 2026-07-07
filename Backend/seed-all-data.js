@@ -8,9 +8,9 @@ async function main() {
 
     // 1. Truncate tables in dependency order
     console.log('Clearing existing data...');
-    await prisma.activitySlot.deleteMany();
     await prisma.activityAttachment.deleteMany();
     await prisma.activityCoworker.deleteMany();
+    await prisma.activitySlot.deleteMany();
     await prisma.activityLog.deleteMany();
     await prisma.sODepartmentActivity.deleteMany();
     await prisma.sODepartment.deleteMany();
