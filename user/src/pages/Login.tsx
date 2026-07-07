@@ -298,17 +298,32 @@ export const Login: React.FC = () => {
                 />
               </Box>
 
-              <Typography
-                variant="caption"
+              {/* Sample Credentials Box */}
+              <Box
                 sx={{
-                  color: '#64748B',
-                  fontWeight: 600,
-                  display: 'block',
-                  mb: 4,
+                  mb: 3,
+                  p: 2,
+                  borderRadius: '12px',
+                  bgcolor: 'rgba(30, 58, 138, 0.05)',
+                  border: '1px dashed rgba(30, 58, 138, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 0.5,
+                  mt: 2,
                 }}
               >
-                Demo: database password is <span style={{ color: '#2563EB', fontWeight: 700 }}>Admin@123</span> (or <span style={{ color: '#2563EB', fontWeight: 700 }}>pass123</span> for showcase)
-              </Typography>
+                <Typography variant="caption" sx={{ color: '#1E3A8A', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Demo Credentials
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#0F172A', fontWeight: 600 }}>
+                  Skilled ID: <Box component="span" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.05)', px: 0.8, py: 0.2, borderRadius: '4px', fontWeight: 800 }}>EMP-2001</Box>
+                  &nbsp;➔ Password: <Box component="span" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.05)', px: 0.8, py: 0.2, borderRadius: '4px', fontWeight: 800 }}>ANI211</Box>
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#0F172A', fontWeight: 600 }}>
+                  Trainee ID: <Box component="span" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.05)', px: 0.8, py: 0.2, borderRadius: '4px', fontWeight: 800 }}>EMP-2003</Box>
+                  &nbsp;➔ Password: <Box component="span" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.05)', px: 0.8, py: 0.2, borderRadius: '4px', fontWeight: 800 }}>SAL876</Box>
+                </Typography>
+              </Box>
 
               <Button
                 type="submit"

@@ -7,6 +7,7 @@ import {
   Param,
   Req,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 
 
@@ -38,14 +39,18 @@ export class ActivityLogsController {
       req.user.userId,
 
       createActivityLogDto,
-);
+    );
   }
 
   @UseGuards(JwtAuthGuard)
-
-@Get()
-  async getActivityLogs() {
-    return this.activityLogsService.getActivityLogs();
+  @Get()
+  async getActivityLogs(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const pageNum = page ? parseInt(page, 10) : undefined;
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+    return this.activityLogsService.getActivityLogs(pageNum, limitNum);
   }
 
   @UseGuards(JwtAuthGuard)

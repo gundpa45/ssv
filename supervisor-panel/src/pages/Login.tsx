@@ -210,6 +210,30 @@ export const Login: React.FC = () => {
                 InputLabelProps={{ sx: { fontSize: '0.875rem' } }}
               />
 
+              {/* Sample Credentials Box */}
+              <Box
+                sx={{
+                  mb: 3,
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(37, 99, 235, 0.05)',
+                  border: '1px dashed rgba(37, 99, 235, 0.2)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 0.5,
+                }}
+              >
+                <Typography variant="caption" sx={{ color: '#2563EB', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Demo Credentials
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                  Supervisor ID: <Box component="span" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.05)', px: 0.8, py: 0.2, borderRadius: '4px', fontWeight: 800 }}>SUPER001</Box>
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                  Password: <Box component="span" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(0,0,0,0.05)', px: 0.8, py: 0.2, borderRadius: '4px', fontWeight: 800 }}>VIK224</Box>
+                </Typography>
+              </Box>
+
               <Button
                 fullWidth
                 variant="contained"

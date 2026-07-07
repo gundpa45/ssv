@@ -28,6 +28,16 @@ export class RolesController {
       },
     });
 
-    return roles;
+    const mappedRoles: any[] = [];
+    for (const r of roles) {
+      if (r.name === 'Worker') {
+        mappedRoles.push({ id: `${r.id}:Skilled`, name: 'Skilled' });
+        mappedRoles.push({ id: `${r.id}:Trainee`, name: 'Trainee' });
+      } else {
+        mappedRoles.push(r);
+      }
+    }
+
+    return mappedRoles;
   }
 }
