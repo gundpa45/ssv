@@ -1,4 +1,3 @@
-import { mockUsers } from '../mock/users';
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
@@ -450,6 +449,7 @@ type PeriodKey = 'Today' | 'Weekly' | 'Monthly' | 'Yearly';
 const UserProfileDialog: React.FC<UserProfileDialogProps> = ({
   user, open, onClose, activityLogs, salesOrders, onEditClick,
 }) => {
+  const { users } = useApp();
   const [tab, setTab] = useState(0);
   const [period, setPeriod] = useState<PeriodKey>('Today');
   const [snackMsg, setSnackMsg] = useState<string | null>(null);
@@ -462,7 +462,7 @@ const UserProfileDialog: React.FC<UserProfileDialogProps> = ({
     const token = localStorage.getItem('accessToken');
     if (!token) return;
     setLoadingDetail(true);
-    const fullUser = mockUsers.find(u => u.id === user.id || u.userId === user.userId);
+    const fullUser = users.find(u => u.id === user.id || u.userId === user.userId);
     if (fullUser) { setDetail(fullUser as any); }
     setLoadingDetail(false);
   }, [user, open]);
