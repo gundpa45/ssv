@@ -240,9 +240,12 @@ export class ActivityLogsService {
     const updated = await this.prisma.activityLog.update({
       where: { id },
       data: {
-        managerRemarks: updatedFields.managerRemarks,
-        isRework: updatedFields.isRework,
-        reworkAssignedToId: updatedFields.reworkAssignedToId,
+        ...(updatedFields.status !== undefined && { status: updatedFields.status as any }),
+        ...(updatedFields.managerRemarks !== undefined && { managerRemarks: updatedFields.managerRemarks }),
+        ...(updatedFields.isRework !== undefined && { isRework: updatedFields.isRework }),
+        ...(updatedFields.reworkAssignedToId !== undefined && { reworkAssignedToId: updatedFields.reworkAssignedToId }),
+        ...(updatedFields.reviewedBy !== undefined && { reviewedBy: updatedFields.reviewedBy }),
+        updatedAt: new Date(),
       },
     });
 

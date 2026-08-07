@@ -425,6 +425,30 @@ export const WorkMonitoring: React.FC = () => {
     }
   };
 
+  const handleApproveWork = async () => {
+    if (!selectedLog) return;
+    const success = await updateActivityLog(selectedLog.id, {
+      status: 'APPROVED',
+    });
+    if (success) {
+      setSelectedLog(prev => prev ? { ...prev, status: 'APPROVED' } : null);
+      setSnackbarMessage('Activity Log Approved successfully!');
+      setShowSnackbar(true);
+    }
+  };
+
+  const handleRejectWork = async () => {
+    if (!selectedLog) return;
+    const success = await updateActivityLog(selectedLog.id, {
+      status: 'REJECTED',
+    });
+    if (success) {
+      setSelectedLog(prev => prev ? { ...prev, status: 'REJECTED' } : null);
+      setSnackbarMessage('Activity Log Rejected!');
+      setShowSnackbar(true);
+    }
+  };
+
   // â”€â”€ Helper List Retrievers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const uniqueSOWorkOrders = useMemo(() => {
     const activeSOs = salesOrders.filter((so) => so.isActive !== false);
@@ -1789,6 +1813,48 @@ export const WorkMonitoring: React.FC = () => {
                         </Button>
                       </Box>
                     )}
+                  </Box>
+
+                  {/* 3. Quality Assurance Action Section */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 3 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'success.main', mb: 0.5, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                      Quality Assurance Decision
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Button
+                        onClick={handleApproveWork}
+                        variant="contained"
+                        color="success"
+                        disabled={selectedLog?.status === 'APPROVED'}
+                        sx={{
+                          flex: 1,
+                          fontWeight: 800,
+                          borderRadius: 2,
+                          py: 1,
+                          textTransform: 'none',
+                          boxShadow: '0 4px 10px rgba(16, 185, 129, 0.2)',
+                        }}
+                      >
+                        Approve Work
+                      </Button>
+                      <Button
+                        onClick={handleRejectWork}
+                        variant="contained"
+                        color="error"
+                        disabled={selectedLog?.status === 'REJECTED'}
+                        sx={{
+                          flex: 1,
+                          fontWeight: 800,
+                          borderRadius: 2,
+                          py: 1,
+                          textTransform: 'none',
+                          boxShadow: '0 4px 10px rgba(239, 68, 68, 0.2)',
+                        }}
+                      >
+                        Reject Work
+                      </Button>
+                    </Box>
                   </Box>
                 </Box>
               )}

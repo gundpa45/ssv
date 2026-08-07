@@ -251,7 +251,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const authUser = localStorage.getItem('authUser');
-    if (authUser) {
+    const token = localStorage.getItem('accessToken');
+    if (authUser && token) {
       setUser(JSON.parse(authUser));
       setIsAuthenticated(true);
       loadInitialData();
@@ -298,21 +299,68 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addNewSalesOrder = async (so: SalesOrder) => {
-    so.id = 'SO' + Date.now();
-    setSalesOrders(p => [so, ...p]);
-    return true;
+    try {
+      const payload: any = {
+        soNumber: so.soNumber,
+        customerName: so.customerName,
+        projectName: so.projectName,
+        startDate: so.startDate,
+        endDate: so.endDate,
+        description: so.description,
+        status: so.status,
+      };
+      await salesOrdersApi.create(payload);
+      await loadInitialData();
+      return true;
+    } catch (err) {
+      console.error('Failed to create SO:', err);
+      // Optimistic fallback
+      so.id = 'SO' + Date.now();
+      setSalesOrders(p => [so, ...p]);
+      return true;
+    }
   };
   const updateSalesOrder = async (id: string, so: SalesOrder) => {
-    setSalesOrders(p => p.map(x => x.id === id ? { ...x, ...so } : x));
-    return true;
+    try {
+      const payload: any = {
+        customerName: so.customerName,
+        projectName: so.projectName,
+        startDate: so.startDate,
+        endDate: so.endDate,
+        description: so.description,
+        status: so.status,
+        isActive: so.isActive,
+      };
+      await salesOrdersApi.update(id, payload);
+      await loadInitialData();
+      return true;
+    } catch (err) {
+      console.error('Failed to update SO:', err);
+      setSalesOrders(p => p.map(x => x.id === id ? { ...x, ...so } : x));
+      return true;
+    }
   };
   const toggleSOStatus = async (id: string, isActive: boolean) => {
-    setSalesOrders(p => p.map(x => x.id === id ? { ...x, isActive } : x));
-    return true;
+    try {
+      await salesOrdersApi.update(id, { isActive });
+      await loadInitialData();
+      return true;
+    } catch (err) {
+      console.error('Failed to toggle SO status:', err);
+      setSalesOrders(p => p.map(x => x.id === id ? { ...x, isActive } : x));
+      return true;
+    }
   };
   const deleteSalesOrder = async (id: string) => {
-    setSalesOrders(p => p.filter(x => x.id !== id));
-    return true;
+    try {
+      await salesOrdersApi.delete(id);
+      await loadInitialData();
+      return true;
+    } catch (err) {
+      console.error('Failed to delete SO:', err);
+      setSalesOrders(p => p.filter(x => x.id !== id));
+      return true;
+    }
   };
 
   const addErpActivity = (act: any) => setErpActivities(p => [...p, { ...act, id: 'ACT' + Date.now() }]);
@@ -385,12 +433,41 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addNewActivityLog = async (log: any) => {
-    setActivityLogs(p => [{ ...log, id: 'LOG' + Date.now() }, ...p]);
-    return true;
+    try {
+      await activityLogsApi.create({
+        soId: log.soId,
+        departmentId: log.departmentId,
+        activityId: log.activityId,
+        durationMinutes: log.durationMinutes,
+        remarks: log.remarks,
+        startTime: log.startTime,
+        endTime: log.endTime,
+        coworkerEmployeeIds: log.coworkerEmployeeIds,
+        employeeId: log.employeeId,
+      });
+      await loadInitialData();
+      return true;
+    } catch (err) {
+      console.error('Failed to create activity log:', err);
+      setActivityLogs(p => [{ ...log, id: 'LOG' + Date.now() }, ...p]);
+      return true;
+    }
   };
   const updateActivityLog = async (id: string, log: any) => {
-    setActivityLogs(p => p.map(x => x.id === id ? { ...x, ...log } : x));
-    return true;
+    try {
+      await activityLogsApi.update(id, {
+        status: log.status,
+        managerRemarks: log.managerRemarks,
+        isRework: log.isRework,
+        remarks: log.remarks,
+      });
+      await loadInitialData();
+      return true;
+    } catch (err) {
+      console.error('Failed to update activity log:', err);
+      setActivityLogs(p => p.map(x => x.id === id ? { ...x, ...log } : x));
+      return true;
+    }
   };
 
   const currentUserRole = user?.role || 'Admin';

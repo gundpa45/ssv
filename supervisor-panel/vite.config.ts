@@ -26,7 +26,7 @@ export default defineConfig(({ command }) => {
       'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
         isProd 
           ? 'https://gamechange-workforce-api.onrender.com/api/v1' 
-          : 'http://localhost:3001/api/v1'
+          : '/api/v1'
       ),
     },
   };

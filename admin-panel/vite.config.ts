@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         // All /api/v1/* requests are proxied to the NestJS backend
         '/api': {
-          target: env.VITE_BACKEND_URL || 'http://localhost:3000',
+          target: env.VITE_BACKEND_URL || 'http://localhost:3001',
           changeOrigin: true,
           secure: false,
         },
