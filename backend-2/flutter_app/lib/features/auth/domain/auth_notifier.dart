@@ -31,9 +31,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   static const String _baseUrl = AppConfig.baseUrl;
 
   /// Dio instance for auth API calls.
+  /// Longer timeouts are needed because Render free tier has cold-start delays.
   final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 45),
-    receiveTimeout: const Duration(seconds: 45),
+    connectTimeout: const Duration(seconds: 90),
+    receiveTimeout: const Duration(seconds: 90),
   ));
 
   // ── Task 3 — Auto-login restore ─────────────────────────────────────────
@@ -157,15 +158,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return;
       }
 
-      // ── Network / timeout / unreachable — fallback to mock ──────────
+      // ── Network / timeout / unreachable — show real error ──────────
       debugPrint(
-        '⚠️ Auth API unreachable (${e.type.name}), using mock login fallback.',
+        '❌ Auth API unreachable (${e.type.name}): ${e.message}',
       );
-      await _mockLoginFallback(employeeId, password);
+      if (!mounted) return;
+      state = state.copyWith(
+        isLoading: false,
+        isAuthenticated: false,
+        errorMessage: 'Cannot connect to server. Please check your internet connection and try again. (${e.type.name})',
+      );
     } catch (e) {
-      // ── Unexpected error — fallback to mock ──────────────────────────
-      debugPrint('⚠️ Unexpected auth error, using mock login fallback: $e');
-      await _mockLoginFallback(employeeId, password);
+      // ── Unexpected error — show real error ──────────────────────────
+      debugPrint('❌ Unexpected auth error: $e');
+      if (!mounted) return;
+      state = state.copyWith(
+        isLoading: false,
+        isAuthenticated: false,
+        errorMessage: 'An unexpected error occurred. Please try again.',
+      );
     }
   }
 
