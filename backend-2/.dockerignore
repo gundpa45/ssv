@@ -1,0 +1,17 @@
+node_modules
+dist
+.env
+.env.*
+.git
+.gitignore
+.vscode
+.idea
+*.md
+test
+coverage
+.agents
+flutter_app
+skills-lock.json
+*.log
+.tmp
+.temp

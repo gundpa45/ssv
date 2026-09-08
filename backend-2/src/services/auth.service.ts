@@ -1,6 +1,7 @@
 import {
   Injectable,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
@@ -15,6 +16,8 @@ import { PasswordUtil } from '../common/utils/password.util';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
 
@@ -28,50 +31,37 @@ export class AuthService {
     employeeId = (employeeId || '').trim();
     password = (password || '').trim();
 
-    const normalizedId = employeeId.toLowerCase();
-
-    // Map common aliases for ease of access
-    let targetEmployeeId = employeeId;
-    if (['admin', 'admin001', 'systemadmin'].includes(normalizedId)) {
-      targetEmployeeId = 'ADMIN001';
+    if (!employeeId || !password) {
+      throw new UnauthorizedException(
+        'Employee ID and password are required',
+      );
     }
 
-    // Try case-insensitive search by employeeId
+    // Case-insensitive search by employeeId
     let user = await this.prisma.user.findFirst({
       where: {
         employeeId: {
-          equals: targetEmployeeId,
+          equals: employeeId,
           mode: 'insensitive',
         },
+        isDeleted: false,
+        isActive: true,
       },
       include: {
         role: true,
       },
     });
 
-    // Fallback: search by email, mobile, or firstName
+    // Fallback: search by email or mobile
     if (!user) {
       user = await this.prisma.user.findFirst({
         where: {
           OR: [
             { email: { equals: employeeId, mode: 'insensitive' } },
             { mobile: employeeId },
-            { firstName: { equals: employeeId, mode: 'insensitive' } },
           ],
-        },
-        include: {
-          role: true,
-        },
-      });
-    }
-
-    // Fallback: default to any Admin if alias matched
-    if (!user && (normalizedId.includes('admin'))) {
-      user = await this.prisma.user.findFirst({
-        where: {
-          role: {
-            name: { in: ['Admin'] },
-          },
+          isDeleted: false,
+          isActive: true,
         },
         include: {
           role: true,
@@ -80,23 +70,24 @@ export class AuthService {
     }
 
     if (!user) {
+      // Use generic message to prevent user enumeration attacks
       throw new UnauthorizedException(
-        'Invalid employee ID or password',
+        'Invalid credentials',
       );
     }
 
-    let isPasswordValid = false;
-    if (password) {
-      isPasswordValid = await PasswordUtil.compare(password, user.passwordHash);
-      if (!isPasswordValid) {
-        // Try uppercase password comparison (e.g. vik224 -> VIK224)
-        isPasswordValid = await PasswordUtil.compare(password.toUpperCase(), user.passwordHash);
-      }
-    }
+    // Verify password
+    const isPasswordValid = await PasswordUtil.compare(
+      password,
+      user.passwordHash,
+    );
 
     if (!isPasswordValid) {
+      this.logger.warn(
+        `Failed login attempt for employee: ${employeeId}`,
+      );
       throw new UnauthorizedException(
-        'Invalid employee ID or password',
+        'Invalid credentials',
       );
     }
 
@@ -107,6 +98,10 @@ export class AuthService {
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
+
+    this.logger.log(
+      `Successful login: ${user.employeeId} (${user.role.name})`,
+    );
 
     return {
       accessToken,
